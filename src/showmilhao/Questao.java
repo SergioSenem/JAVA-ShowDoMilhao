@@ -16,7 +16,7 @@ public class Questao {
     private int dificuldade;
     private ArrayList<String> alternativas;
     private char alternativa_correta; 
-    
+        
     public Questao(
                     String enunciado,
                     int dificuldade,
