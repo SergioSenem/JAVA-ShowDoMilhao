@@ -13,45 +13,38 @@ import java.util.ArrayList;
 public class Questao {
     
     private String enunciado;
-    private int dificuldade;
-    private ArrayList<String> alternativas;
-    private char alternativa_correta; 
+    private ArrayList<Resposta> respostas;
+    private Resposta correta;
         
-    public Questao(
-                    String enunciado,
-                    int dificuldade,
-                    ArrayList<String> alternativas,
-                    char alternativa_correta
-                  )
-    {
+    public Questao(String enunciado){
         this.enunciado = enunciado;
-        this.dificuldade = dificuldade;
-        this.alternativas = alternativas;
-        this.alternativa_correta = alternativa_correta;
     }
-    
-    public char get_alternativa_correta(){
-        return this.alternativa_correta;
-    }
-    
+  
     public String get_enunciado(){
         return this.enunciado;
     }
     
-    public String get_alternativa(int posicao){
-        return this.alternativas.get(posicao);
+    public Resposta get_resposta(int posicao){
+        return this.respostas.get(posicao);
     }
     
-    public int get_dificuldade(){
-        return this.dificuldade;
+    public int get_num_respostas(){
+        return this.respostas.size();
     }
     
-    public int get_num_questoes(){
-        return this.alternativas.size();
+    public ArrayList<Resposta> get_alternativas(){
+        return this.respostas;
     }
     
-    public ArrayList<String> get_alternativas(){
-        return this.alternativas;
+    public void add_resposta(char letra, String texto, boolean correta){
+        if(correta){
+            this.correta = new Resposta(letra, texto, correta);
+        }
+        this.respostas.add(new Resposta(letra, texto, correta));
+    }
+    
+    public boolean verifica_resposta(char letra){
+        return letra == this.correta.get_letra();
     }
     
 }
