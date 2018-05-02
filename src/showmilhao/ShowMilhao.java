@@ -16,7 +16,7 @@ public class ShowMilhao {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        Jogo jogo = new Jogo();
+        IOJogo jogo = new IOJogo();
         jogo.comecar();
     }
     

@@ -5,7 +5,6 @@
  */
 package showmilhao;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  *
@@ -14,7 +13,9 @@ import java.util.Scanner;
 public class Jogo {
     
     private boolean acabou;
-    private ArrayList<Questao> questoes;
+    private ArrayList<Questao> faceis;
+    private ArrayList<Questao> medias;
+    private ArrayList<Questao> dificeis;
     private int num_pulos_restantes;
     private int num_eliminacoes_restantes;
     private int pontos;
@@ -22,14 +23,17 @@ public class Jogo {
     
     public Jogo(){
         this.acabou = false;
-        this.questoes = new ArrayList();
+        this.faceis = new ArrayList();
+        this.medias = new ArrayList();
+        this.dificeis = new ArrayList();
         this.num_pulos_restantes = 3;
         this.num_eliminacoes_restantes = 1;
         this.pontos = 0;
+        this.num_acertos = 0;
         
         CriaQuestoes fabrica = new CriaQuestoes();
         
-        fabrica.cria_questoes(questoes);
+        fabrica.cria_questoes(faceis, medias, dificeis);
     }
     
     public int get_num_pulos(){
@@ -48,124 +52,77 @@ public class Jogo {
         return this.acabou;
     }
     
-    public Questao get_questao(int questao){
-        return this.questoes.get(questao);
+    public Questao get_questao_facil(int questao){
+        return this.faceis.get(questao);
+    }
+    
+    public Questao get_questao_media(int questao){
+        return this.medias.get(questao);
+    }
+    
+    public Questao get_questao_dificil(int questao){
+        return this.dificeis.get(questao);
     }
     
     public int get_num_acertos(){
         return this.num_acertos;
     }
     
-    public void desistir(){
+    public void acabar(){
         this.acabou = true;
     }
     
-    public Questao eliminar_alternativa(Questao questao){
+    public void eliminar_alternativa(Questao questao){
         long num;
         boolean ok = false;
-        char correta;
         int op_correta;
-        correta = questao.get_alternativa_correta();
+        op_correta = questao.get_resposta_correta();
         
-        switch(correta){
-            case 'A':
-                op_correta = 0;
-                break;
-            case 'B':
-                op_correta = 1;
-                break;
-            case 'C':
-                op_correta = 2;
-                break;
-            case 'D':
-                op_correta = 3;
-                break;
-            default:
-                op_correta = -1;
-                System.out.println("Erro!");
-        }
         num = -1;
         while(!ok){
-            num = Math.round(Math.random()*4);
-            if(num != 0){
-                if(num != op_correta){
-                    ok = true;
-                }
+            num = Math.round(Math.random()*3);
+            if(num != op_correta){
+                ok = true;
             }
         }
         
-        ArrayList<String> novas_alternativas = questao.get_alternativas();
-        novas_alternativas.remove((int)num);
-        Questao nova_questao = new Questao(questao.get_enunciado(), questao.get_dificuldade(), novas_alternativas, correta);
-        return nova_questao;
-    }
-    
-    public void comecar(){
-        while(!this.acabou){
-            if(this.num_acertos != 0){
-                if(this.continuar(this.escolhe_continuar())){
-                    Questao questao = this.escolhe_questao(this.escolhe_dificuldade());
-                    this.nova_questao(questao, this.get_posicao_questao(questao));
-                }
-                else{
-                    this.desistir();
-                    System.out.println("Você desistiu!\n");
-                }
-            }
-            else{
-                Questao questao = this.escolhe_questao(this.escolhe_dificuldade());
-                this.nova_questao(questao, this.get_posicao_questao(questao));
-            }
-        }
-        this.mostra_resultado();
-    }
-    
-    public void mostra_questao(Questao questao){
-        System.out.println("Pontos: " + this.pontos);
-        System.out.println("Acertos: " + this.num_acertos + "\n");
-        System.out.println((this.num_acertos+1) + ")" + questao.get_enunciado() + "\n");
-        int i;
-        for(i=0;i<questao.get_num_questoes();i++){
-            switch(i){
-                case 0:
-                    System.out.println("A)" + questao.get_alternativa(i));
-                    break;
-                case 1:
-                    System.out.println("B)" + questao.get_alternativa(i));
-                    break;
-                case 2:
-                    System.out.println("C)" + questao.get_alternativa(i));
-                    break;
-                case 3:
-                    System.out.println("D)" + questao.get_alternativa(i));
-                    break;
-                default:
-                    System.out.println("Erro ao mostrar alternativas!");
-                    break;
-            }
-        }
-        System.out.println("\n");
-        if(this.num_eliminacoes_restantes>0){
-            System.out.println("[1] - Eliminar uma alternativa errada (" + this.num_eliminacoes_restantes + " restantes)");
-        }
-        if(this.num_pulos_restantes > 0){
-            System.out.println("[2] - Pular questão ("+ this.num_pulos_restantes +" restantes)");
-        }
-        System.out.println("\n");
+        questao.get_resposta((int)num).invalidar();
     }
 
     public Questao escolhe_questao(int dificuldade){
-        long num = -1;
+        long num;
+        boolean ok = false;
         Questao questao = null;
-        while(num==-1 || questao.get_dificuldade() != dificuldade){
-            num = Math.round(Math.random()*this.get_num_questoes());
-            questao = this.questoes.get((int)num);
+        while(!ok){
+            switch(dificuldade){
+                case 1:
+                    num = Math.round(Math.random() * (this.get_num_faceis() - 1));
+                    questao = this.faceis.get((int)num);
+                    break;
+                case 2:
+                    num = Math.round(Math.random() * (this.get_num_medias() - 1));
+                    questao = this.medias.get((int)num);
+                    break;
+                case 3:
+                    num = Math.round(Math.random() * (this.get_num_dificeis() - 1));
+                    questao = this.dificeis.get((int)num);
+                    break;
+            }
+            ok = !questao.get_respondida();
         }
         return questao;
     }
     
-    public int get_num_questoes(){
-        return this.questoes.size();
+    public int get_num_faceis(){
+        return this.faceis.size();
+    }
+    
+    public int get_num_medias(){
+        return this.medias.size();
+    }
+    
+    public int get_num_dificeis(){
+        return this.dificeis.size();
     }
     
     public int escolhe_dificuldade(){
@@ -182,103 +139,85 @@ public class Jogo {
         }
     }
     
-    public char escolhe_alternativa(){
-        char escolha;
-        Scanner sc = new Scanner(System.in);
-        escolha = sc.next().charAt(0);
-        return escolha;
-    }
     
-    public boolean verifica_resposta(Questao questao, char resposta){
-        return questao.get_alternativa_correta() == resposta;
-    }
     
-    public void aumenta_pontos(int dificuldade){
-        switch(dificuldade){
-            case 1:
-                this.pontos += 1000;
-                break;
-            case 2:
-                this.pontos += 2000;
-                break;
-            case 3:
-                this.pontos += 990000;
-                break;
-            default:
-                System.out.println("Erro ao aumentar pontuação!");
-                break;
+    public void aumenta_pontos(){
+        if(this.num_acertos < 4){
+            this.pontos += 1000;
+        }
+        else{
+            if(this.num_acertos < 7){
+                this.pontos += 3000;
+            }
+            else{
+                this.pontos += 987000;
+            }
         }
     }
 
-    public void nova_questao(Questao questao, int posicao){
+    public int nova_questao(Questao questao, int posicao, char resposta){
         
-        this.mostra_questao(questao);
-        char resposta = this.escolhe_alternativa();
+        int resultado = 0;
+        
         if(resposta == '2' && this.num_eliminacoes_restantes > 0){
-            this.questoes.remove(posicao);
+            questao.set_respondida();
             this.num_pulos_restantes--;
         }
         else{
             if(resposta=='1' && this.num_eliminacoes_restantes > 0){
-                questao = this.eliminar_alternativa(questao);
+                this.eliminar_alternativa(questao);
                 this.num_eliminacoes_restantes--;
-                this.mostra_questao(questao);
-                resposta = this.escolhe_alternativa();
-            }
-            if(this.verifica_resposta(questao, resposta)){
-                this.num_acertos++;
-                this.aumenta_pontos(questao.get_dificuldade());
-                this.questoes.remove(posicao);
-                System.out.println("Você acertou!\n");
+                resultado = 1; //Saida informando escolha de eliminar questao
             }
             else{
-                if(resposta != 'A' && resposta != 'B' && resposta != 'C' && resposta != 'D' && resposta != '1' && resposta != '2'){
-                    System.out.println("Valor inválido\n");
+                if(questao.verifica_resposta(resposta)){
+                    this.aumenta_pontos();
+                    this.num_acertos++;
+                    questao.set_respondida();
+                    resultado = 2; //Saida informando acerto do usuário
+                    //System.out.println("Você acertou!\n");
                 }
                 else{
-                    if(resposta == '2' || resposta == '1'){
-                        System.out.println("Você não tem permissão!\n");
+                    if(resposta != 'A' && resposta != 'B' && resposta != 'C' && resposta != 'D' && resposta != '1' && resposta != '2'){
+                        resultado = 3; //Saida informando valor inválido
+                        //System.out.println("Valor inválido\n");
                     }
                     else{
-                        System.out.println("Você errou!\n");
-                        this.acabou = true;
-                        this.pontos /= 2;
+                        if(resposta == '2' || resposta == '1'){
+                            resultado = 4; //Saida informando falta de permissão
+                            //System.out.println("Você não tem permissão!\n");
+                        }
+                        else{
+                            resultado = 5; //Saida informando erro do usuário
+                            //System.out.println("Você errou!\n");
+                            this.acabou = true;
+                            this.pontos = 0;
+                        }
                     }
+
                 }
-                
             }
         }
-        
+        return resultado;
     }
     
-    public boolean continuar(int resposta){
-        if(resposta == 1){
-            return true;
-        }
-        else{
-            if(resposta == 2){
-                return false;
-            }
-            else{
-                System.out.println("Valor inválido!");
-                return false;
-            }
-        }
-    }
     
-    public int escolhe_continuar(){
-        System.out.println("Continuar?\n");
-        System.out.println("[1] - Sim");
-        System.out.println("[2] - Não\n");
-        Scanner sc = new Scanner(System.in);
-        int resposta = sc.nextInt();
-        return resposta;
-    }
-    
-    public int get_posicao_questao(Questao questao){
+    public int get_posicao_questao(Questao questao, int dificuldade){
         int i;
         int pos = -1;
-        for(i=0;i<this.questoes.size();i++){
+        ArrayList<Questao> questoes = new ArrayList();
+        switch(dificuldade){
+            case 1:
+                questoes = this.faceis;
+                break;
+            case 2:
+                questoes = this.medias;
+                break;
+            case 3:
+                questoes = this.dificeis;
+                break;
+        }
+        for(i=0;i<questoes.size();i++){
             if(questoes.get(i) == questao){
                 pos = i;
             }
@@ -286,12 +225,9 @@ public class Jogo {
         return pos;
     }
     
-    public void mostra_resultado(){
-        if(this.num_acertos == 8){
-            System.out.println("Você ganhou!");
-        }
-        System.out.println("Você acertou " + this.num_acertos + " questões!");
-        System.out.println("Você ganhou " + this.pontos + " reias em barras de ouro que valem mais que dinheiro!");
+    public void desistir(){
+        this.pontos /= 2;
+        this.acabou = true;
     }
 
 }
