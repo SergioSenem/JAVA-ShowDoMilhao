@@ -18,7 +18,7 @@ public class IOJogo {
         jogo = new Jogo();
     }
     
-    public void mostra_resultado(){
+    private void mostra_resultado(){
         if(this.jogo.get_num_acertos() == 8){
             System.out.println("Você ganhou!");
         }
@@ -82,7 +82,7 @@ public class IOJogo {
         this.mostra_resultado();
     }
     
-    public void mostra_questao(Questao questao){
+    private void mostra_questao(Questao questao){
         System.out.println("Pontos: " + this.jogo.get_pontos());
         System.out.println("Acertos: " + this.jogo.get_num_acertos() + "\n");
         System.out.println((this.jogo.get_num_acertos()+1) + ")" + questao.get_enunciado() + "\n");
@@ -102,7 +102,7 @@ public class IOJogo {
         System.out.println("\n");
     }
     
-    public int escolhe_continuar(){
+    private int escolhe_continuar(){
         System.out.println("Continuar? (Pontos: " + this.jogo.get_pontos() + ")\n");
         System.out.println("[1] - Sim");
         System.out.println("[2] - Não\n");
@@ -111,14 +111,14 @@ public class IOJogo {
         return resposta;
     }
     
-    public char escolhe_alternativa(){
+    private char escolhe_alternativa(){
         char escolha;
         Scanner sc = new Scanner(System.in);
         escolha = sc.next().charAt(0);
         return escolha;
     }
     
-    public boolean continuar(int resposta){
+    private boolean continuar(int resposta){
         if(resposta == 1){
             return true;
         }

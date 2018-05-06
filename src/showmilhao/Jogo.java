@@ -52,18 +52,6 @@ public class Jogo {
         return this.acabou;
     }
     
-    public Questao get_questao_facil(int questao){
-        return this.faceis.get(questao);
-    }
-    
-    public Questao get_questao_media(int questao){
-        return this.medias.get(questao);
-    }
-    
-    public Questao get_questao_dificil(int questao){
-        return this.dificeis.get(questao);
-    }
-    
     public int get_num_acertos(){
         return this.num_acertos;
     }
@@ -72,7 +60,7 @@ public class Jogo {
         this.acabou = true;
     }
     
-    public void eliminar_alternativa(Questao questao){
+    private void eliminar_alternativa(Questao questao){
         long num;
         boolean ok = false;
         int op_correta;
@@ -113,15 +101,15 @@ public class Jogo {
         return questao;
     }
     
-    public int get_num_faceis(){
+    private int get_num_faceis(){
         return this.faceis.size();
     }
     
-    public int get_num_medias(){
+    private int get_num_medias(){
         return this.medias.size();
     }
     
-    public int get_num_dificeis(){
+    private int get_num_dificeis(){
         return this.dificeis.size();
     }
     
@@ -141,7 +129,7 @@ public class Jogo {
     
     
     
-    public void aumenta_pontos(){
+    private void aumenta_pontos(){
         if(this.num_acertos < 4){
             this.pontos += 1000;
         }
