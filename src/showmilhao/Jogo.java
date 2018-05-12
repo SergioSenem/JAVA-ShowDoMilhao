@@ -147,7 +147,7 @@ public class Jogo {
         
         int resultado = 0;
         
-        if(resposta == '2' && this.num_eliminacoes_restantes > 0){
+        if(resposta == '2' && this.num_pulos_restantes > 0){
             questao.set_respondida();
             this.num_pulos_restantes--;
         }
